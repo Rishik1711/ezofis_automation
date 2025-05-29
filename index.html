@@ -63,16 +63,24 @@
       50%  { transform: translateY(-16px); }
       100% { transform: translateY(0); }
     }
-    .image-container img.blob {
+    .blob {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 125%;
+      width: 100%;
       height: auto;
-      opacity: 0.5;
-      z-index: 0;
       pointer-events: none;
       transform: translate(-50%, -50%);
+    }
+
+    .blob-primary {
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    .blob-secondary {
+      opacity: 0.5;
+      z-index: 0;
     }
     .features-grid {
       position: relative;
@@ -249,7 +257,6 @@
       border: 2px solid #6f42c1;
       color: #333;
       width: 100%;
-      display: none;
       cursor: pointer;
       background-color: white;
       transition: all 0.3s ease;
@@ -422,6 +429,22 @@
       background-color: #f5f5f5;
       margin-top: auto;
     }
+    /* New styles for email input */
+    .email-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .email-input:focus {
+      border-color: #6f42c1;
+      box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.2);
+      outline: none;
+    }
     @media (max-width: 900px) {
       .main {
         flex-direction: column;
@@ -449,6 +472,12 @@
         padding: 8px;
         gap: 12px;
       }
+      .blob-primary {
+        width: 110%;
+      }
+      .blob-secondary {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -458,8 +487,8 @@
   <div class="main">
     <div class="left">
       <div class="image-container">
-        <img src="/static/blob-primary-light.62dbbf77.svg" alt="blob" class="blob">
-        <img src="/static/blob-secondary-light.7ea75af0.svg" alt="blob" class="blob">
+        <img src="/static/blob-primary-light.svg" alt="blob" class="blob blob-primary">
+        <img src="/static/blob-secondary-light.svg" alt="blob" class="blob blob-secondary">
 
         <div class="sub-feature" style="top: calc(50% - 172px); left: calc(50% - 146px);">
           <div class="avatar primary"><i class="mdi mdi-archive icon"></i></div>
@@ -507,15 +536,14 @@ Streamline your QA process using our powerful Pytest-based automation framework.
           />
           <button type="submit" id="verifyButton" class="btn">Verify</button>
 
+          <!-- Add new email input section -->
+          <div id="emailSection" style="display: none; margin-top: 20px;">
+    <label for="optionDropdown">Select Email</label>
+    <select id="optionDropdown" class="dropdown" aria-label="Select an option">
+        <option value="" disabled selected>Select an email</option>
+    </select>
+</div>
         </form>
-        <select id="optionDropdown" class="dropdown" aria-label="Select an option">
-          <option value="" disabled selected>Select an option</option>
-          <option value="admin@ezofis.com">admin@ezofis.com</option>
-          <option value="rishik@ezofis.com">rishik@ezofis.com</option>
-          <option value="qa@ezofis.com">qa@ezofis.com</option>
-          <option value="test@ezofis.com">test@ezofis.com</option>
-          <option value="dev@ezofis.com">dev@ezofis.com</option>
-        </select>
         <div id="testExecutionContainer" class="test-execution-container">
           <div class="test-step" data-test="login">
             <span class="test-step-icon">🔐</span>
@@ -607,6 +635,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const verifyButton = document.getElementById('verifyButton');
   const testContainer = document.getElementById('testExecutionContainer');
   const resultsContainer = document.getElementById('resultsContainer');
+  const emailInput = document.getElementById('emailInput');
+  const emailSection = document.getElementById('emailSection');
 
   // Fetch emails when page loads
   fetch('/api/emails')
@@ -622,40 +652,44 @@ window.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => console.error('Error fetching emails:', error));
 
-  // Handle form submission
+  // Update the form submission handler
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (urlInput.value) {
-      dropdown.style.display = 'block';
-      urlInput.style.display = 'none';
-      verifyButton.style.display = 'none';
+        // Keep URL input visible but make it readonly
+        urlInput.readOnly = true;
+        verifyButton.disabled = true;
+        
+        // Show dropdown
+        document.getElementById('emailSection').style.display = 'block';
+        document.getElementById('optionDropdown').style.display = 'block';
     }
   });
 
-  // Handle email selection and test execution
+  // Update dropdown change handler
   dropdown.addEventListener('change', () => {
     if (dropdown.value) {
-      testContainer.style.display = 'block';
-      resultsContainer.style.display = 'none';
-      
-      const formData = new FormData();
-      formData.append('url', urlInput.value);
-      formData.append('email', dropdown.value);
-      
-      fetch('/', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 'started') {
-          startStatusPolling(dropdown.value);
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showError('Failed to start test execution');
-      });
+        testContainer.style.display = 'block';
+        resultsContainer.style.display = 'none';
+        
+        const formData = new FormData();
+        formData.append('url', urlInput.value);
+        formData.append('email', dropdown.value);
+        
+        fetch('/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'started') {
+                startStatusPolling(dropdown.value);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showError('Failed to start test execution');
+        });
     }
   });
 
