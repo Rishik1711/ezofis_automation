@@ -283,27 +283,32 @@
       background: white;
       display: flex;
       align-items: center;
-      opacity: 0.6;
+      opacity: 0.4; /* Start dimmed */
       transition: all 0.3s ease;
+      border-left: 4px solid transparent;
     }
-    .test-step.active {
+
+    .test-step.current {
       opacity: 1;
       background: #e8f5e9;
       border-left: 4px solid #4caf50;
       transform: translateX(5px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     .test-step.completed {
       opacity: 1;
       background: #f5f5f5;
-    }
-    .test-step.error {
-      opacity: 1;
-      background: #ffebee;
-      border-left: 4px solid #f44336;
+      border-left: 4px solid #4caf50;
     }
     .test-step-icon {
       margin-right: 15px;
       font-size: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .test-step.current .test-step-icon {
+      transform: scale(1.2);
     }
     .test-step-text {
       font-size: 14px;
@@ -316,110 +321,139 @@
     }
     .results-container {
       display: none;
-      margin-top: 30px;
-      padding: 30px;
-      background: linear-gradient(135deg, #6f42c1 0%, #4a90e2 100%);
-      border-radius: 15px;
-      color: white;
-      animation: slideIn 0.5s ease-out;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      z-index: 1000;
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      color: #333;
     }
     .results-container.visible {
       opacity: 1;
-      transform: translateY(0);
-    }
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
     .results-header {
       font-size: 24px;
-      font-weight: 600;
+      font-weight: 800;
+      color: #6f42c1;
       margin-bottom: 25px;
       text-align: center;
-      color: white;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     .results-content {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
+      margin: 20px 0;
     }
     .result-item {
-      margin: 15px 0;
-      display: flex;
+      display: grid;
+      grid-template-columns: 150px 1fr;
       align-items: center;
-      gap: 10px;
+      margin: 15px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
     }
     .result-label {
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.9);
-      min-width: 120px;
+      font-weight: 700;
+      color: #444;
+      font-size: 16px;
     }
     .result-value {
-      color: white;
+      color: #666;
+      font-size: 15px;
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
       font-weight: 600;
-      word-break: break-all;
+      font-size: 14px;
+      display: inline-block;
+    }
+    .status-badge.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-badge.error {
+      background: #ffebee;
+      color: #c62828;
     }
     .results-actions {
       display: flex;
       justify-content: center;
       gap: 15px;
-      margin-top: 20px;
+      margin-top: 30px;
     }
     .result-btn {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
     }
     .view-report-btn {
-      background-color: white;
-      color: #6f42c1;
-    }
-    .view-report-btn:hover {
-      background-color: #f8f9fa;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      background: #6f42c1;
+      color: white;
     }
     .download-report-btn {
-      background-color: rgba(255, 255, 255, 0.2);
+      background: #5a379d;
       color: white;
     }
-    .download-report-btn:hover {
-      background-color: rgba(255, 255, 255, 0.3);
+    .result-btn:hover {
       transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(111, 66, 193, 0.2);
     }
-    .status-badge {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 14px;
-      font-weight: 600;
+    .result-btn span {
+      margin-right: 8px;
     }
-    .status-badge.success {
-      background-color: #4caf50;
+    /* Add overlay background */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+    }
+
+    /* Add close button */
+    .close-results {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #6f42c1;
       color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1001;
     }
-    .status-badge.error {
-      background-color: #f44336;
-      color: white;
+
+    .close-results:hover {
+      background: #5a379d;
+      transform: scale(1.1);
     }
     .footer {
       text-align: center;
@@ -595,32 +629,38 @@ Streamline your QA process using our powerful Pytest-based automation framework.
           </div>
         </div>
         <div id="resultsContainer" class="results-container">
+          <button type="button" class="close-results">×</button>
           <div class="results-header">Test Execution Results</div>
-          <div class="results-content">
-            <div class="result-item">
-              <span class="result-label">Status:</span>
-              <span id="resultStatus" class="status-badge"></span>
-            </div>
-            <div class="result-item">
-              <span class="result-label">Email:</span>
-              <span id="resultEmail" class="result-value"></span>
-            </div>
-            <div class="result-item">
-              <span class="result-label">URL Tested:</span>
-              <span id="resultUrl" class="result-value"></span>
-            </div>
-            <div class="result-item">
-              <span class="result-label">Execution Time:</span>
-              <span id="resultTime" class="result-value"></span>
-            </div>
+          
+          <div class="result-item">
+              <div class="result-label">Status:</div>
+              <div class="result-value">
+                  <span id="resultStatus" class="status-badge"></span>
+              </div>
           </div>
+          
+          <div class="result-item">
+              <div class="result-label">Email:</div>
+              <div class="result-value" id="resultEmail"></div>
+          </div>
+          
+          <div class="result-item">
+              <div class="result-label">URL Tested:</div>
+              <div class="result-value" id="resultUrl"></div>
+          </div>
+          
+          <div class="result-item">
+              <div class="result-label">Execution Time:</div>
+              <div class="result-value" id="resultTime"></div>
+          </div>
+
           <div class="results-actions">
-            <a href="#" id="viewReportBtn" class="result-btn view-report-btn" target="_blank">
-              <span>📊</span> View Report
-            </a>
-            <a href="#" id="downloadReportBtn" class="result-btn download-report-btn" download>
-              <span>⬇️</span> Download Report
-            </a>
+              <a href="#" id="viewReportBtn" class="result-btn view-report-btn">
+                  <span>📊</span> View Report
+              </a>
+              <a href="#" id="downloadReportBtn" class="result-btn download-report-btn">
+                  <span>⬇️</span> Download Report
+              </a>
           </div>
         </div>
       </div>
@@ -671,6 +711,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (dropdown.value) {
         testContainer.style.display = 'block';
         resultsContainer.style.display = 'none';
+        resetTestSteps(); // Reset steps before starting new test
         
         const formData = new FormData();
         formData.append('url', urlInput.value);
@@ -718,8 +759,20 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 2000); // Poll every 2 seconds
   }
 
+  // Add this function to show results
   function showResults(data) {
+    const overlay = document.getElementById('overlay');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    // Show overlay and results
+    overlay.style.display = 'block';
     resultsContainer.style.display = 'block';
+    
+    // Force reflow
+    void resultsContainer.offsetWidth;
+    
+    // Add visible class for animation
+    overlay.classList.add('visible');
     resultsContainer.classList.add('visible');
     
     // Update result details
@@ -738,10 +791,38 @@ window.addEventListener('DOMContentLoaded', () => {
         downloadReportBtn.href = data.report_download_url || data.report_url.replace('/static/reports/', '/download/report/');
         viewReportBtn.style.display = 'inline-flex';
         downloadReportBtn.style.display = 'inline-flex';
-        viewReportBtn.style.pointerEvents = 'auto';
-        downloadReportBtn.style.pointerEvents = 'auto';
     }
-  }
+}
+
+// Update the close function
+function closeResults(e) {
+    if (e) {
+        e.preventDefault();  // Prevent any default actions
+        e.stopPropagation(); // Stop event bubbling
+    }
+    
+    const overlay = document.getElementById('overlay');
+    const resultsContainer = document.getElementById('resultsContainer');
+    
+    // Remove visible classes first
+    overlay.classList.remove('visible');
+    resultsContainer.classList.remove('visible');
+    
+    // Hide elements after transition
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        resultsContainer.style.display = 'none';
+        
+        // Reset form without reloading
+        document.getElementById('url').readOnly = false;
+        document.getElementById('verifyButton').disabled = false;
+        document.getElementById('emailSection').style.display = 'none';
+        document.getElementById('testExecutionContainer').style.display = 'none';
+    }, 300);
+}
+
+// Update the event listener
+document.querySelector('.close-results').addEventListener('click', (e) => closeResults(e));
 
   function showError(message) {
     resultsContainer.style.display = 'block';
@@ -751,6 +832,51 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('resultStatus').className = 'status-badge error';
     document.getElementById('resultTime').textContent = message;
   }
+
+  function updateTestProgress(currentStep) {
+    const steps = document.querySelectorAll('.test-step');
+    
+    if (currentStep === 'completed') {
+        // When test is complete, make all steps visible
+        steps.forEach(step => {
+            step.classList.add('completed');
+            step.style.opacity = '1';
+            step.style.transition = 'opacity 0.5s ease';
+        });
+    } else {
+        // During test execution, keep all steps dimmed
+        steps.forEach(step => {
+            step.style.opacity = '0.4';
+            step.classList.remove('completed', 'current');
+        });
+
+        // Only highlight current step
+        const currentStepElement = Array.from(steps).find(step => 
+            step.getAttribute('data-test') === currentStep
+        );
+        if (currentStepElement) {
+            currentStepElement.classList.add('current');
+            currentStepElement.style.opacity = '0.7'; // Make current step slightly more visible
+        }
+    }
+}
+
+  // Update the resetTestSteps function
+  function resetTestSteps() {
+    const steps = document.querySelectorAll('.test-step');
+    steps.forEach(step => {
+        step.classList.remove('current', 'completed');
+        step.style.opacity = '0.4';  // Start all steps dimmed
+        step.style.transition = 'opacity 0.5s ease';
+    });
+}
+  // Add this function to reset steps when starting new test
+  function resetTestSteps() {
+    const steps = document.querySelectorAll('.test-step');
+    steps.forEach(step => {
+        step.classList.remove('current', 'completed');
+    });
+}
 
   function updateTestProgress(currentStep) {
     const steps = document.querySelectorAll('.test-step');
@@ -764,5 +890,6 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+<div id="overlay" class="overlay"></div>
 </body>
 </html>
