@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EZOFIS Automation</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+  <!-- MDI Icon Font -->
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+  <style>
+    /* Layout and containers */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 120px;
+    }
+    .main {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+    }
+    .left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background-color: #fff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+    }
+    /* Feature image and cards */
+    .image-container {
+      position: relative;
+      width: 360px;
+      height: 360px;
+      margin: 0 auto;
+      animation: float-5fc1a864 3s ease-in-out infinite;
+    }
+    @keyframes float-5fc1a864 {
+      0%   { transform: translateY(0); }
+      50%  { transform: translateY(-16px); }
+      100% { transform: translateY(0); }
+    }
+    .image-container img.blob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 125%;
+      height: auto;
+      opacity: 0.5;
+      z-index: 0;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+    }
+    .features-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+    .sub-feature {
+      position: absolute;
+      width: 140px;
+      padding: 24px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 1rem 3rem rgba(0,0,0,0.25) !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+    .sub-feature .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .avatar.primary { background-color: #6f2dc3; }
+    .avatar.secondary { background-color: #1ab1e5; }
+    .icon { color: white; font-size: 32px; }
+    .label {
+      margin-top: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+    }
+    /* Feature description (unique class) */
+    .feature-description {
+      text-align: center;
+      margin-top: 40px;
+      font-family: Arial, sans-serif;
+    }
+    .feature-description strong {
+      font-size: 20px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .feature-description span {
+      font-size: 14px;
+      color: #666;
+    }
+    /* Main description (form section) */
+    .description {
+      text-align: center;
+      max-width: 700px;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .description p {
+      margin: 0;
+      color: #333;
+    }
+    .description p strong {
+      font-size: 24px;
+      display: block;
+      color: #6f42c1;
+      margin-bottom: 10px;
+    }
+    .description span {
+      display: block;
+      font-size: 16px;
+      color: #666;
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+    /* Form and dropdown */
+    .welcome-message {
+      font-size: 28px;
+      font-weight: 800; /* or 700 for bold */
+      color: #6f42c1;
+      margin-bottom: 30px;
+      text-shadow: none;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .tooltip {
+      margin-left: 10px;
+      background-color: #6f42c1;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      text-align: center;
+      font-size: 14px;
+      line-height: 20px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .tooltip:hover {
+      transform: scale(1.1);
+      background-color: #5a379d;
+    }
+    .tooltip:hover::after {
+      content: "Please enter the correct testing URL for testing purpose.";
+      position: absolute;
+      background-color: #333;
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      width: 220px;
+      top: 25px;
+      left: -100px;
+      z-index: 10;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    input[type="url"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    input[type="url"]:focus {
+      border-color: #6f42c1;
+      box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.2);
+      outline: none;
+    }
+    .btn {
+      margin-top: 10px;
+      padding: 12px 30px;
+      background-color: #6f42c1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      text-transform: uppercase;
+    }
+    .btn:hover {
+      background-color: #5a379d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(111, 66, 193, 0.2);
+    }
+    .dropdown {
+      margin-top: 20px;
+      font-size: 16px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 2px solid #6f42c1;
+      color: #333;
+      width: 100%;
+      display: none;
+      cursor: pointer;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    .dropdown:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(111, 66, 193, 0.2);
+    }
+    /* Test execution and results */
+    .test-execution-container {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      display: none;
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .test-step {
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 6px;
+      background: white;
+      display: flex;
+      align-items: center;
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+    .test-step.active {
+      opacity: 1;
+      background: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      transform: translateX(5px);
+    }
+    .test-step.completed {
+      opacity: 1;
+      background: #f5f5f5;
+    }
+    .test-step.error {
+      opacity: 1;
+      background: #ffebee;
+      border-left: 4px solid #f44336;
+    }
+    .test-step-icon {
+      margin-right: 15px;
+      font-size: 20px;
+    }
+    .test-step-text {
+      font-size: 14px;
+      color: #333;
+      flex-grow: 1;
+    }
+    .test-step-status {
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    .results-container {
+      display: none;
+      margin-top: 30px;
+      padding: 30px;
+      background: linear-gradient(135deg, #6f42c1 0%, #4a90e2 100%);
+      border-radius: 15px;
+      color: white;
+      animation: slideIn 0.5s ease-out;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .results-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .results-header {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .results-content {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .result-item {
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .result-label {
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      min-width: 120px;
+    }
+    .result-value {
+      color: white;
+      font-weight: 600;
+      word-break: break-all;
+    }
+    .results-actions {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .result-btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .view-report-btn {
+      background-color: white;
+      color: #6f42c1;
+    }
+    .view-report-btn:hover {
+      background-color: #f8f9fa;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .download-report-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    .download-report-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .status-badge.success {
+      background-color: #4caf50;
+      color: white;
+    }
+    .status-badge.error {
+      background-color: #f44336;
+      color: white;
+    }
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+      padding: 20px 0;
+      background-color: #f5f5f5;
+      margin-top: auto;
+    }
+    @media (max-width: 900px) {
+      .main {
+        flex-direction: column;
+        padding: 20px;
+      }
+      .left, .right {
+        width: 100%;
+        text-align: center;
+      }
+      .video-wrapper {
+        max-width: 100%;
+      }
+      .description {
+        max-width: 100%;
+      }
+      .container {
+        margin-top: 40px;
+      }
+      .image-container {
+        width: 100vw;
+        height: auto;
+        min-height: 240px;
+      }
+      .features-grid {
+        padding: 8px;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo" class="logo" />
+
+  <div class="main">
+    <div class="left">
+      <div class="image-container">
+        <img src="/static/blob-primary-light.62dbbf77.svg" alt="blob" class="blob">
+        <img src="/static/blob-secondary-light.7ea75af0.svg" alt="blob" class="blob">
+
+        <div class="sub-feature" style="top: calc(50% - 172px); left: calc(50% - 146px);">
+          <div class="avatar primary"><i class="mdi mdi-archive icon"></i></div>
+          <div class="label">Workspace Automation</div>
+        </div>
+        <div class="sub-feature" style="top: calc(50% - 160px); right: calc(50% - 146px);">
+          <div class="avatar secondary"><i class="mdi mdi-cube icon"></i></div>
+          <div class="label">Portals &amp; Tasks</div>
+        </div>
+        <div class="sub-feature" style="bottom: calc(50% - 160px); left: calc(50% - 146px);">
+          <div class="avatar secondary"><i class="mdi mdi-sitemap icon"></i></div>
+          <div class="label">Workflows &amp; Forms</div>
+        </div>
+        <div class="sub-feature" style="bottom: calc(50% - 172px); right: calc(50% - 146px);">
+          <div class="avatar primary"><i class="mdi mdi-shape-plus icon"></i></div>
+          <div class="label">Easy Integrations</div>
+        </div>
+      </div>
+      <div class="feature-description">
+        <strong>Digital Workspace &amp; Low-Code Automation</strong>
+        <span>
+          Access all your workflows and data in one place with our digital workspace.<br>
+          Simplify your process automation with our low-code platform.
+        </span>
+      </div>
+    </div>
+    <div class="right">
+      <div class="container">
+        <div class="welcome-message">Hi, Welcome back to EZOFIS</div>
+        <form id="urlForm">
+          <label for="url">
+            Enter the URL
+            <span class="tooltip">i</span>
+          </label>
+          <input
+            type="url"
+            id="url"
+            name="url"
+            placeholder="https://example.com"
+            required
+            pattern="https?://.+"
+            oninvalid="this.setCustomValidity('Please enter a valid URL starting with http:// or https://')"
+            oninput="this.setCustomValidity('')"
+          />
+          <button type="submit" id="verifyButton" class="btn">Verify</button>
+
+        </form>
+        <select id="optionDropdown" class="dropdown" aria-label="Select an option">
+          <option value="" disabled selected>Select an option</option>
+          <option value="admin@ezofis.com">admin@ezofis.com</option>
+          <option value="rishik@ezofis.com">rishik@ezofis.com</option>
+          <option value="qa@ezofis.com">qa@ezofis.com</option>
+          <option value="test@ezofis.com">test@ezofis.com</option>
+          <option value="dev@ezofis.com">dev@ezofis.com</option>
+        </select>
+        <div id="testExecutionContainer" class="test-execution-container">
+          <div class="test-step" data-test="login">
+            <span class="test-step-icon">🔐</span>
+            <span class="test-step-text">Logging in with credentials...</span>
+          </div>
+          <div class="test-step" data-test="task-flow">
+            <span class="test-step-icon">🧭</span>
+            <span class="test-step-text">Navigating to Task Flow section...</span>
+          </div>
+          <div class="test-step" data-test="initiate">
+            <span class="test-step-icon">🚀</span>
+            <span class="test-step-text">Clicking on Initiate...</span>
+          </div>
+          <div class="test-step" data-test="task-name">
+            <span class="test-step-icon">📝</span>
+            <span class="test-step-text">Entering task name...</span>
+          </div>
+          <div class="test-step" data-test="start-date">
+            <span class="test-step-icon">📅</span>
+            <span class="test-step-text">Setting start date...</span>
+          </div>
+          <div class="test-step" data-test="deadline">
+            <span class="test-step-icon">⏰</span>
+            <span class="test-step-text">Setting deadline...</span>
+          </div>
+          <div class="test-step" data-test="task-type">
+            <span class="test-step-icon">📂</span>
+            <span class="test-step-text">Selecting task type...</span>
+          </div>
+          <div class="test-step" data-test="file-upload">
+            <span class="test-step-icon">📎</span>
+            <span class="test-step-text">Uploading file...</span>
+          </div>
+          <div class="test-step" data-test="progress">
+            <span class="test-step-icon">📊</span>
+            <span class="test-step-text">Setting task progress...</span>
+          </div>
+          <div class="test-step" data-test="time">
+            <span class="test-step-icon">⏱️</span>
+            <span class="test-step-text">Updating task time...</span>
+          </div>
+          <div class="test-step" data-test="remarks">
+            <span class="test-step-icon">💬</span>
+            <span class="test-step-text">Adding remarks...</span>
+          </div>
+          <div class="test-step" data-test="submit">
+            <span class="test-step-icon">✅</span>
+            <span class="test-step-text">Submitting task form...</span>
+          </div>
+        </div>
+        <div id="resultsContainer" class="results-container">
+          <div class="results-header">Test Execution Results</div>
+          <div class="results-content">
+            <div class="result-item">
+              <span class="result-label">Status:</span>
+              <span id="resultStatus" class="status-badge"></span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Email:</span>
+              <span id="resultEmail" class="result-value"></span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">URL Tested:</span>
+              <span id="resultUrl" class="result-value"></span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">Execution Time:</span>
+              <span id="resultTime" class="result-value"></span>
+            </div>
+          </div>
+          <div class="results-actions">
+            <a href="#" id="viewReportBtn" class="result-btn view-report-btn" target="_blank">
+              <span>📊</span> View Report
+            </a>
+            <a href="#" id="downloadReportBtn" class="result-btn download-report-btn" download>
+              <span>⬇️</span> Download Report
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer">© 2025 All Rights Reserved</div>
+  <script>
+window.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('urlForm');
+  const urlInput = document.getElementById('url');
+  const dropdown = document.getElementById('optionDropdown');
+  const verifyButton = document.getElementById('verifyButton');
+  const testContainer = document.getElementById('testExecutionContainer');
+  const resultsContainer = document.getElementById('resultsContainer');
+
+  // Fetch emails when page loads
+  fetch('/api/emails')
+    .then(response => response.json())
+    .then(emails => {
+      dropdown.innerHTML = '<option value="" disabled selected>Select an option</option>';
+      emails.forEach(email => {
+        const option = document.createElement('option');
+        option.value = email;
+        option.text = email;
+        dropdown.appendChild(option);
+      });
+    })
+    .catch(error => console.error('Error fetching emails:', error));
+
+  // Handle form submission
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (urlInput.value) {
+      dropdown.style.display = 'block';
+      urlInput.style.display = 'none';
+      verifyButton.style.display = 'none';
+    }
+  });
+
+  // Handle email selection and test execution
+  dropdown.addEventListener('change', () => {
+    if (dropdown.value) {
+      testContainer.style.display = 'block';
+      resultsContainer.style.display = 'none';
+      
+      const formData = new FormData();
+      formData.append('url', urlInput.value);
+      formData.append('email', dropdown.value);
+      
+      fetch('/', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'started') {
+          startStatusPolling(dropdown.value);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showError('Failed to start test execution');
+      });
+    }
+  });
+
+  function startStatusPolling(email) {
+    const pollInterval = setInterval(() => {
+      fetch(`/test-status?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => {
+          // Update progress indicators
+          updateTestProgress(data.currentStep);
+          
+          if (data.status === 'completed' || data.status === 'failed' || data.status === 'error') {
+            clearInterval(pollInterval);
+            showResults({
+              ...data,
+              email: email,
+              url: document.getElementById('url').value
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Status polling error:', error);
+          clearInterval(pollInterval);
+          showError('Lost connection to server');
+        });
+    }, 2000); // Poll every 2 seconds
+  }
+
+  function showResults(data) {
+    resultsContainer.style.display = 'block';
+    resultsContainer.classList.add('visible');
+    
+    // Update result details
+    document.getElementById('resultStatus').textContent = data.status === 'completed' ? 'Completed' : 'Failed';
+    document.getElementById('resultStatus').className = `status-badge ${data.status === 'completed' ? 'success' : 'error'}`;
+    document.getElementById('resultEmail').textContent = data.email || '';
+    document.getElementById('resultUrl').textContent = data.url || '';
+    document.getElementById('resultTime').textContent = data.completion_time || '';
+
+    // Update report buttons
+    const viewReportBtn = document.getElementById('viewReportBtn');
+    const downloadReportBtn = document.getElementById('downloadReportBtn');
+    
+    if (data.report_url) {
+        viewReportBtn.href = data.report_url;
+        downloadReportBtn.href = data.report_download_url || data.report_url.replace('/static/reports/', '/download/report/');
+        viewReportBtn.style.display = 'inline-flex';
+        downloadReportBtn.style.display = 'inline-flex';
+        viewReportBtn.style.pointerEvents = 'auto';
+        downloadReportBtn.style.pointerEvents = 'auto';
+    }
+  }
+
+  function showError(message) {
+    resultsContainer.style.display = 'block';
+    resultsContainer.classList.add('visible');
+    
+    document.getElementById('resultStatus').textContent = 'Error';
+    document.getElementById('resultStatus').className = 'status-badge error';
+    document.getElementById('resultTime').textContent = message;
+  }
+
+  function updateTestProgress(currentStep) {
+    const steps = document.querySelectorAll('.test-step');
+    steps.forEach(step => {
+      if (step.dataset.step === currentStep) {
+        step.classList.add('active');
+      } else if (currentStep === 'completed') {
+        step.classList.add('completed');
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
