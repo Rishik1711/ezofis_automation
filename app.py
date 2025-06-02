@@ -39,8 +39,11 @@ driver = '{ODBC Driver 17 for SQL Server}'
 def get_emails():
     try:
         conn = pyodbc.connect(
-            f'DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes'
+        f'DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;Connection Timeout=5'
         )
+        print(f"Connecting to DB with SERVER={server}, DATABASE={database}, UID={username}")
+
+
         cursor = conn.cursor()
         cursor.execute("SELECT email FROM tenant WHERE isDeleted=0")
         emails = [row[0] for row in cursor.fetchall()]
