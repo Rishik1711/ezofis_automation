@@ -30,10 +30,10 @@ os.makedirs(REPORTS_DIR, exist_ok=True)
 test_results = {}
 
 # Database connection parameters
-server = 'ezmtraildb.database.windows.net'
-database = 'ezEnterpriseMain'
-username = 'ezmtrailsa'
-password = 'Ezofis@123'
+server = os.getenv('DB_HOST')
+database = os.getenv('DB_NAME')
+username = os.getenv('DB_USER')
+password = os.getenv('DB_PASS')
 driver = '{ODBC Driver 17 for SQL Server}'
 
 def get_emails():
